@@ -1,0 +1,30 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical" 
+    tools:context=".VoiceActivity" >
+    
+
+	    <Button
+	        android:id="@+id/btSpeak"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:padding="@dimen/padding_medium"
+	        android:text="@string/btSpeak"
+	        tools:context=".VoiceActivity" />
+	    <TextView
+     	    android:id="@+id/fupHeard"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:text="@string/tvTextMatches"
+	        android:textStyle="bold" />
+	    <TextView
+	        android:id="@+id/fupDebug"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:text="@string/fupText"
+	        android:textStyle="bold" />
+	    
+
+</LinearLayout>
