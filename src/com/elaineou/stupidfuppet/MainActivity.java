@@ -10,7 +10,6 @@ public class MainActivity extends FragmentActivity {
 		super.onCreate(savedInstanceState);
 		
 		setContentView(R.layout.activity_main);
-		//VoiceActivity vfragment = new VoiceActivity();
 		ElizaActivity vfragment = new ElizaActivity();
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.voice_fragment, vfragment).commit();
