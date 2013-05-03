@@ -4,11 +4,11 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 
 public class MainActivity extends FragmentActivity {
-	    
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
+
 		setContentView(R.layout.activity_main);
 		ElizaActivity vfragment = new ElizaActivity();
         getSupportFragmentManager().beginTransaction()
@@ -18,5 +18,6 @@ public class MainActivity extends FragmentActivity {
                 .replace(R.id.fuppet_fragment, ffragment).commit();
         
 	}
+
 }
 

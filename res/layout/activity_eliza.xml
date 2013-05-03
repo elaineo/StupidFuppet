@@ -12,13 +12,6 @@
 	        android:padding="@dimen/padding_medium"
 	        android:text="@string/btSpeak"
 	        tools:context=".ElizaActivity" />
- 		<EditText android:id="@+id/elizaInput" 
-	        android:inputType="textShortMessage"  
-	        android:layout_width="fill_parent"
-	  		android:layout_height="wrap_content"
-	  		android:layout_marginTop="5dip"
-	  		android:layout_marginBottom="20dip"
-	  		android:singleLine="true"/>
 	    <TextView
 	        android:id="@+id/elizaDebug"
 	        android:layout_width="match_parent"
