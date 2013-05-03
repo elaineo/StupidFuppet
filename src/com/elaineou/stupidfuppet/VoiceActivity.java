@@ -40,7 +40,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 public class VoiceActivity extends Fragment implements OnClickListener {
-	 public final static String VOICE_RESULT = "com.elaineou.stupidfuppeto.RESULT"; 
+	 public final static String VOICE_RESULT = "com.elaineou.stupidfuppet.RESULT"; 
 	 public final static String CLIENT_ID="fuppet";
 	 public final static String CLIENT_SECRET="JmYW9cIgtCIyKDixDtnIoUM4cFkTIIdvqfUzeEOBXLI=";
 	 public final static String DatamarketAccessUri = "https://datamarket.accesscontrol.windows.net/v2/OAuth2-13";
@@ -52,6 +52,9 @@ public class VoiceActivity extends Fragment implements OnClickListener {
 	 private Button mbtSpeak;
 	 private SpeechRecognizer sr;
 	 private String access_token;
+	 
+	 //eliza stuff
+	 // readscript, runprogram
 
 
     @Override
@@ -67,8 +70,8 @@ public class VoiceActivity extends Fragment implements OnClickListener {
  	 checkVoiceRecognition();
       sr = SpeechRecognizer.createSpeechRecognizer(this.getActivity());       
       sr.setRecognitionListener(new listener());     
-      GetAccessToken accesstok = new GetAccessToken();
-      accesstok.execute();
+//      GetAccessToken accesstok = new GetAccessToken();
+//      accesstok.execute();
         return rootView;
     }
 	 
@@ -108,18 +111,10 @@ public class VoiceActivity extends Fragment implements OnClickListener {
 	            	Log.d(TAG, "onResults");
 	                     ArrayList data = results.getStringArrayList(SpeechRecognizer.RESULTS_RECOGNITION);
 	                     mHeard.setText("What you said: "+data.get(0));
-	                     TranslateText tt = new TranslateText();
 	                     String output=null;
-	                     try {
-							output = tt.execute(data.get(0).toString()).get();
-		                    callSpeechActivity( output);
-						} catch (InterruptedException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						} catch (ExecutionException e) {
-							// TODO Auto-generated catch block
-							e.printStackTrace();
-						}
+	                     // create ElizaActivity
+	                     output = data.get(0).toString();
+		                 callSpeechActivity( output);
 	            }
 	            public void onPartialResults(Bundle partialResults)
 	            {

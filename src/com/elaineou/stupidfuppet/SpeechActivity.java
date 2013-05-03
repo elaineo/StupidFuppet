@@ -38,7 +38,7 @@ public class SpeechActivity extends Activity  implements OnInitListener, OnUtter
 
     @Override
     public void onInit(int status) {
-    	Locale locale = new Locale("spa", "MEX");
+    	Locale locale = new Locale("en", "EN");
         if (status == TextToSpeech.SUCCESS) {
             setTtsListener();
        	 	tts.setPitch(0.5f);

@@ -6,6 +6,7 @@
     <string name="menu_settings">Settings</string>
     <string name="tvTextMatches">What you said</string>
     <string name="fupText">Message here</string>
+    <string name="elizaText">Eliza here</string>
     <string name="title_activity_fuppet">Fuppet Activity</string>
     <string name="title_activity_speech">Fuppet Speak</string>    
 </resources>

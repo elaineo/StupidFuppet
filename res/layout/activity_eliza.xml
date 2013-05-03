@@ -3,26 +3,30 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="vertical" 
-    tools:context=".VoiceActivity" >
+    tools:context=".ElizaActivity" >
     
-
 	    <Button
-	        android:id="@+id/btSpeak"
+	        android:id="@+id/btEliza"
 	        android:layout_width="match_parent"
 	        android:layout_height="wrap_content"
 	        android:padding="@dimen/padding_medium"
 	        android:text="@string/btSpeak"
-	        tools:context=".VoiceActivity" />
+	        tools:context=".ElizaActivity" />
+ 		<EditText android:id="@+id/elizaInput" 
+	        android:inputType="textShortMessage"  
+	        android:layout_width="fill_parent"
+	  		android:layout_height="wrap_content"
+	  		android:layout_marginTop="5dip"
+	  		android:layout_marginBottom="20dip"
+	  		android:singleLine="true"/>
 	    <TextView
-     	    android:id="@+id/fupHeard"
+	        android:id="@+id/elizaDebug"
 	        android:layout_width="match_parent"
 	        android:layout_height="wrap_content"
-	        android:text="@string/tvTextMatches"
-	        android:textStyle="bold" />
+	        android:text="@string/elizaText" />	    
 	    <TextView
-	        android:id="@+id/fupDebug"
+	        android:id="@+id/elizaField"
 	        android:layout_width="match_parent"
 	        android:layout_height="wrap_content"
-	        android:text="@string/fupText"
-	        android:textStyle="bold" />	   
+	        android:text="@string/elizaText" />	   
 </LinearLayout>
