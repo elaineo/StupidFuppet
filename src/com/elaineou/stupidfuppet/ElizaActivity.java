@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
@@ -31,6 +32,7 @@ public class ElizaActivity extends Fragment implements OnClickListener, OnInitLi
 	 private static final String TAGsp = "SpeechActivity";
 	 private static final String TAGvr = "VoiceRecActivity";
 	 private SpeechRecognizer sr;
+	 private OnSpeechListener spListener;
 
 	 private FuppetStuff stupidf;
     private TextToSpeech tts;
@@ -61,13 +63,13 @@ public class ElizaActivity extends Fragment implements OnClickListener, OnInitLi
      sr.setRecognitionListener(new listener());     
 	 tts = new TextToSpeech(getActivity(), this);
    	 hashAudio = new HashMap<String, String>();
-
+   	 
      return rootView;
     }
 	 
 	 @Override
 	 public void onCreate(Bundle savedInstanceState) {
-	  super.onCreate(savedInstanceState);           
+	  super.onCreate(savedInstanceState);
 	 }
 
 	 public void onClick(View view) {
@@ -206,11 +208,26 @@ public class ElizaActivity extends Fragment implements OnClickListener, OnInitLi
             hashAudio.put(TextToSpeech.Engine.KEY_PARAM_STREAM, String.valueOf(AudioManager.STREAM_MUSIC));
             hashAudio.put(TextToSpeech.Engine.KEY_PARAM_UTTERANCE_ID, "fuppet");
             tts.speak(message, TextToSpeech.QUEUE_ADD, hashAudio);
-			 
+            spListener.onSpeech(true);
 		 }
 		@Override
 		public void onUtteranceCompleted(String utteranceId) {
 			Log.e(TAGsp, "completed");
+			spListener.onSpeech(false);
 		}   
+		
+	/** external communications **/
+    public interface OnSpeechListener {
+        public void onSpeech(Boolean talkOn);
+    }
+    @Override
+    public void onAttach(Activity activity) {
+        super.onAttach(activity);
+        try {
+            spListener = (OnSpeechListener) activity;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(activity.toString() + " must implement OnSpeechListener");
+        }
+    }
 }
 

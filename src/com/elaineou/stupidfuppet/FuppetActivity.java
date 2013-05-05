@@ -26,5 +26,8 @@ public class FuppetActivity extends Fragment {
         return fuppetSV;
         
     }
+    void animateSpeech(Boolean talk) {
+    	fuppetSV.animateFuppet(talk);
+    }
 }
 

@@ -3,7 +3,9 @@ package com.elaineou.stupidfuppet;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
 
-public class MainActivity extends FragmentActivity {
+import com.elaineou.stupidfuppet.ElizaActivity.OnSpeechListener;
+
+public class MainActivity extends FragmentActivity implements OnSpeechListener{
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -18,6 +20,12 @@ public class MainActivity extends FragmentActivity {
                 .replace(R.id.fuppet_fragment, ffragment).commit();
         
 	}
+	@Override
+    public void onSpeech(Boolean talkOn) {
+        // TODO Auto-generated method stub
+         FuppetActivity Obj=(FuppetActivity) getSupportFragmentManager().findFragmentById(R.id.fuppet_fragment);
+         Obj.animateSpeech(talkOn);
+    }
 
 }
 

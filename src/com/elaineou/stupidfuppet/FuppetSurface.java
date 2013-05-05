@@ -1,5 +1,8 @@
 package com.elaineou.stupidfuppet;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -8,10 +11,15 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Rect;
 import android.os.CountDownTimer;
+import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 
 class FuppetSurface extends SurfaceView implements SurfaceHolder.Callback{
+	private static final String TAG = "FuppetSVActivity";
+	final static int INTERVAL=100;
+	final static int MouthCycle=1000;
+	
     private FuppetThread _thread;
     Bitmap _fface= BitmapFactory.decodeResource(getResources(),
             R.drawable.fuppet_head);
@@ -24,33 +32,37 @@ class FuppetSurface extends SurfaceView implements SurfaceHolder.Callback{
     Rect reRect = new Rect(900,650,1000,750);
     Rect moRect = new Rect(400,900,1200,1100);
     
-    int i = 1;
+    Boolean enableFuppetMouth=false;
+    int elapsed;
+    TimerTask talkMouth=new TimerTask(){
+        @Override
+        public void run() {
+        	if (enableFuppetMouth) {
+        		elapsed+=INTERVAL;
+        	} else {elapsed=0;}
+            moRect.bottom = 930+170*(elapsed/MouthCycle);
+            if (elapsed>MouthCycle) {
+            	elapsed=0;
+            }
+        }
+    };
+    Timer timerMouth = new Timer();
     
     public FuppetSurface(Context context) {
         super(context);
         getHolder().addCallback(this);
-        
-        
-        final CountDownTimer t = new CountDownTimer(75000,100)
-        {
-            @Override
-            public void onFinish() {    
-            }
-
-            @Override
-            public void onTick(long millisUntilFinished) {
-                i++;
-                if ( i >= 4 ) { i = 1; }
-                if ( i == 1 ) { moRect.bottom = 1100; }
-                else if ( i == 2 ) { moRect.bottom = 1000; }
-                else if ( i == 3 ) { moRect.bottom = 930; }
-                else if ( i == 4 ) { moRect.bottom = 1000; }
-            }
-        }.start();
-        
+        timerMouth.scheduleAtFixedRate(talkMouth,INTERVAL,INTERVAL);
         _thread = new FuppetThread(getHolder(), this);
     }
-
+    
+    void animateFuppet(Boolean talk) {
+    	if (talk) {
+    		elapsed=0;
+    		enableFuppetMouth=true;
+    	} else {Log.d(TAG,"Stop Talking");
+    		enableFuppetMouth=false;}
+    }
+    
     @Override
     protected void onDraw(Canvas canvas) {
         super.onDraw(canvas);
