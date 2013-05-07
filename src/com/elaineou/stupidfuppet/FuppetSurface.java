@@ -10,7 +10,6 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Rect;
-import android.os.CountDownTimer;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
