@@ -5,6 +5,7 @@ import java.util.Properties;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import edu.stanford.nlp.ling.CoreAnnotations.SentencesAnnotation;
 import edu.stanford.nlp.ling.CoreAnnotations.TextAnnotation;
 import edu.stanford.nlp.ling.CoreAnnotations.TokensAnnotation;
@@ -14,6 +15,7 @@ import edu.stanford.nlp.pipeline.StanfordCoreNLP;
 import edu.stanford.nlp.util.CoreMap;
 
 public class FeedReadActivity extends Fragment {
+	private static final String TAG = "FeedReadActivity";
 	private Properties FeedReadprops;
 
 	@Override
@@ -21,7 +23,7 @@ public class FeedReadActivity extends Fragment {
 	  super.onCreate(savedInstanceState);
 	 
 	  FeedReadprops = new Properties();
-	  FeedReadprops.put("annotators", "cleanxml, tokenize, ssplit");
+	  FeedReadprops.put("annotators", "tokenize, ssplit");
 	  StanfordCoreNLP pipeline = new StanfordCoreNLP(FeedReadprops);
 	  
 	  
@@ -42,6 +44,7 @@ public class FeedReadActivity extends Fragment {
 	        for (CoreLabel token: sentence.get(TokensAnnotation.class)) {
 	          // this is the text of the token
 	          String word = token.get(TextAnnotation.class);
+	          Log.d(TAG,word);
 	        }
 	    }
 	}

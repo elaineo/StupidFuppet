@@ -12,7 +12,8 @@ public class MainActivity extends FragmentActivity implements OnSpeechListener{
 		super.onCreate(savedInstanceState);
 
 		setContentView(R.layout.activity_main);
-		ElizaActivity vfragment = new ElizaActivity();
+		//ElizaActivity vfragment = new ElizaActivity();
+		FeedReadActivity vfragment = new FeedReadActivity();
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.voice_fragment, vfragment).commit();
 		FuppetActivity ffragment = new FuppetActivity();
