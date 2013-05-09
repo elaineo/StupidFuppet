@@ -7,10 +7,13 @@ import java.io.UnsupportedEncodingException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
-import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
+import java.util.Set;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
@@ -48,6 +51,8 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 
+import com.elaineou.utils.FeedArticle;
+import com.elaineou.utils.FeedKey;
 import com.elaineou.utils.MySSLSocketFactory;
 
 import edu.stanford.nlp.ling.CoreAnnotations.SentencesAnnotation;
@@ -63,8 +68,11 @@ public class FeedReadActivity extends Fragment {
     static final String KEY_ITEM = "item"; // parent node
     static final String KEY_DESC = "description";
     static final String KEY_TITL = "title";
+    static final String KEY_LINK = "link";
     static final String KEY_CATE = "category";
 	private Properties FeedReadprops;
+	
+	private HashMap<FeedKey, FeedArticle> feedMap;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -83,33 +91,41 @@ public class FeedReadActivity extends Fragment {
 			String text = new String();
 			String xml = new String();
 			StanfordCoreNLP pipeline = new StanfordCoreNLP(FeedReadprops);
-			ArrayList<HashMap<String, String>> feedItems = new ArrayList<HashMap<String, String>>();
-			  
-			xml = getXmlFromUrl("http://www.thereformedbroker.com/feed/");
-			Log.d(TAG,xml);
+			feedMap= new HashMap <FeedKey,FeedArticle>();
+
+			/** TODO: Loop through a predefined list of feeds **/
+			xml = getXmlFromUrl("http://feeds.feedburner.com/techcrunch/startups?format=xml");
+
 			Document doc = getDomElement(xml);
 	        NodeList nl = doc.getElementsByTagName(KEY_ITEM);
 	        // looping through all item nodes <item>
 	        for (int i = 0; i < nl.getLength(); i++) {
-	            // creating new HashMap
-	            HashMap<String, String> map = new HashMap<String, String>();
-	            Element e = (Element) nl.item(i);
-	            // adding each child node to HashMap key => value
-	            map.put(KEY_TITL, getValue(e, KEY_TITL));
-	            map.put(KEY_CATE, getValue(e, KEY_CATE));
-	            map.put(KEY_DESC, getValue(e, KEY_DESC));
-
+	            // create key based on categories
+	        	Element e = (Element) nl.item(i);
+	        	Set<String> k = new HashSet<String> (getValues(e,KEY_CATE));
+	        	FeedKey fk = new FeedKey(k);
+	        	// creating new FeedArticle
+	        	FeedArticle art = new FeedArticle(getValue(e, KEY_TITL),getValue(e, KEY_LINK),
+	        			getValue(e, KEY_DESC),k);
 	            
-	            // adding HashList to ArrayList
-	            feedItems.add(map);
+	        	feedMap.put(fk,art);
 	        }
+	        
 			/* What should we actually tokenize and store??? */
 	        /* test test */
-	        for (String value : feedItems.get(0).values()) {
-	        	Log.d(TAG,"text = " + value);
-	        	text=value;
-	        }	        
-		    Annotation document = new Annotation(text);
+	        Iterator it = feedMap.entrySet().iterator();
+	        text="";
+	        while (it.hasNext()) {
+	            Map.Entry pairs = (Map.Entry)it.next();
+	            FeedArticle fadebug = (FeedArticle) pairs.getValue();
+	            Log.d(TAG, pairs.getKey() + " = " + fadebug);
+	            	
+	            //blah blah delete this later
+	            text = fadebug.getTitle();
+	            it.remove(); // avoids a ConcurrentModificationException
+	        }
+
+	        Annotation document = new Annotation(text);
 		    
 		    // run all Annotators on this text
 		    pipeline.annotate(document);
@@ -223,7 +239,14 @@ public class FeedReadActivity extends Fragment {
 	    NodeList n = item.getElementsByTagName(str);        
 	    return this.getElementValue(n.item(0));
 	}
-	 
+	public ArrayList<String> getValues(Element item, String str) {      
+		ArrayList<String> vals = new ArrayList<String>();
+		NodeList n = item.getElementsByTagName(str);
+		for (int j=0; j<n.getLength();j++) {
+			vals.add(getElementValue(n.item(j)));
+		}
+		return vals;
+	} 
 	public final String getElementValue( Node elem ) {
          Node child;
          if( elem != null){
