@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.ExecutionException;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -27,6 +28,10 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.elaineou.feedread.FeedArticle;
+import com.elaineou.feedread.FeedKey;
+import com.elaineou.feedread.FeedReader;
+
 public class ElizaActivity extends Fragment implements OnClickListener, OnInitListener, OnUtteranceCompletedListener{
 	 private static final String TAG = "ElizaActivity";
 	 private static final String TAGsp = "SpeechActivity";
@@ -36,7 +41,9 @@ public class ElizaActivity extends Fragment implements OnClickListener, OnInitLi
 
 	 private FuppetStuff stupidf;
     private TextToSpeech tts;
+    private FeedReader fReader;
     private HashMap<String, String> hashAudio;
+    private HashMap<FeedKey, FeedArticle> feedMap;
 
 	 private TextView elField;
 	 private TextView elDebug;
@@ -49,22 +56,33 @@ public class ElizaActivity extends Fragment implements OnClickListener, OnInitLi
 
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.activity_eliza, container, false);
-  	  elDebug = (TextView) rootView.findViewById(R.id.elizaDebug);
-  	  elField = (TextView) rootView.findViewById(R.id.elizaField);
-  	  ebtSpeak = (Button) rootView.findViewById(R.id.btEliza); 
-  	  
-  	  stupidf = new FuppetStuff();
-  	  stupidf.readScript("script", getActivity());
-      
-  	  ebtSpeak.setOnClickListener(this);
-      
-  	 checkVoiceRecognition();
-     sr = SpeechRecognizer.createSpeechRecognizer(this.getActivity());       
-     sr.setRecognitionListener(new listener());     
+	  elDebug = (TextView) rootView.findViewById(R.id.elizaDebug);
+	  elField = (TextView) rootView.findViewById(R.id.elizaField);
+	  ebtSpeak = (Button) rootView.findViewById(R.id.btEliza); 
+	  
+	  stupidf = new FuppetStuff();
+	  stupidf.readScript("script", getActivity());
+	  
+	  ebtSpeak.setOnClickListener(this);
+	  
+	 checkVoiceRecognition();
+	 sr = SpeechRecognizer.createSpeechRecognizer(this.getActivity());       
+	 sr.setRecognitionListener(new listener());     
 	 tts = new TextToSpeech(getActivity(), this);
-   	 hashAudio = new HashMap<String, String>();
-   	 
-     return rootView;
+	 hashAudio = new HashMap<String, String>();
+	 
+	 fReader = new FeedReader();
+	 try {
+		feedMap = fReader.execute().get();
+	} catch (InterruptedException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	} catch (ExecutionException e) {
+		// TODO Auto-generated catch block
+		e.printStackTrace();
+	}
+	 
+	   return rootView;
     }
 	 
 	 @Override
