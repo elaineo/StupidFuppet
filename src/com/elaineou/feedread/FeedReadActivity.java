@@ -1,5 +1,7 @@
 package com.elaineou.feedread;
 
+import java.io.BufferedReader;
+import java.io.FileReader;
 import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
@@ -39,6 +41,7 @@ import org.apache.http.conn.scheme.SchemeRegistry;
 import org.apache.http.conn.ssl.SSLSocketFactory;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.util.EntityUtils;
+import org.louie.ml.lexrank.DocumentSummarizer;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -53,10 +56,13 @@ import android.util.Log;
 
 import com.elaineou.utils.MySSLSocketFactory;
 
+import edu.stanford.nlp.ling.CoreAnnotations.NamedEntityTagAnnotation;
+import edu.stanford.nlp.ling.CoreAnnotations.PartOfSpeechAnnotation;
 import edu.stanford.nlp.ling.CoreAnnotations.SentencesAnnotation;
 import edu.stanford.nlp.ling.CoreAnnotations.TextAnnotation;
 import edu.stanford.nlp.ling.CoreAnnotations.TokensAnnotation;
 import edu.stanford.nlp.ling.CoreLabel;
+import edu.stanford.nlp.ling.Sentence;
 import edu.stanford.nlp.pipeline.Annotation;
 import edu.stanford.nlp.pipeline.StanfordCoreNLP;
 import edu.stanford.nlp.util.CoreMap;
@@ -83,6 +89,90 @@ public class FeedReadActivity extends Fragment {
 	}
 	
 	class CollectFeed extends AsyncTask<Void,Void,Void> {
+		
+		private String summarize_article(String text){
+			Properties props = new Properties();
+		    props.put("annotators", "tokenize, ssplit, pos, lemma, ner");
+		    StanfordCoreNLP pipeline = new StanfordCoreNLP(props);
+
+			String buf = "";
+		    Annotation document = new Annotation(text);
+		    
+		    // run all Annotators on this text
+		    pipeline.annotate(document);
+		    
+		    // these are all the sentences in this document
+		    // a CoreMap is essentially a Map that uses class objects as keys and has values with custom types
+		    List<CoreMap> sentences = document.get(SentencesAnnotation.class);
+		    
+		    List<CoreMap> selected_sentences = new ArrayList<CoreMap>();
+		    Set<String> seen_persons = new HashSet<String>();
+		    for(CoreMap sentence: sentences) {
+		        // traversing the words in the current sentence
+		        // a CoreLabel is a CoreMap with additional token-specific methods
+		    	boolean pick_sentence = false;
+		        for (CoreLabel token: sentence.get(TokensAnnotation.class)) {
+		          // this is the text of the token
+		          String word = token.get(TextAnnotation.class);
+		          // this is the POS tag of the token
+		          String pos = token.get(PartOfSpeechAnnotation.class);
+		          // this is the NER label of the token
+		          String ner = token.get(NamedEntityTagAnnotation.class);
+//		          System.out.println(word +' '+ ner);
+		          if (ner.equals("PERSON")){
+	//	        	  System.out.println(ner);
+		        	  int i = seen_persons.size();
+		        	  seen_persons.add(word);
+		        	  if (seen_persons.size() > i){
+		        		  pick_sentence = true;
+		        	  }
+		          }
+		        }
+		        if (pick_sentence){ 
+	      	  		selected_sentences.add(sentence);
+		        }
+		    }
+		    // assemble sentence
+		    for(CoreMap sentence: selected_sentences) {
+		    	for (CoreLabel token: sentence.get(TokensAnnotation.class)) {
+		    		String word = token.get(TextAnnotation.class);
+		    		buf += word + ' ';
+		    	}
+		    }
+
+			return buf;
+		}
+		private String summarize_multidocument(String text){
+			String buf = "";
+			// Make a list of sentences
+			Properties props = new Properties();
+		    props.put("annotators", "tokenize, ssplit, pos, lemma, ner");
+		    StanfordCoreNLP pipeline = new StanfordCoreNLP(props);
+		    Annotation document = new Annotation(text);
+		    pipeline.annotate(document);
+		    List<CoreMap> sentences = document.get(SentencesAnnotation.class);
+		    
+		    List<CoreMap> selected_sentences = new ArrayList<CoreMap>();
+		    Set<String> seen_persons = new HashSet<String>();
+		    List<String> core_sentences = new ArrayList<String>();
+		    
+		    for(CoreMap sentence: sentences) {
+		    	String s = "";
+		        for (CoreLabel token: sentence.get(TokensAnnotation.class)) {
+			          String word = token.get(TextAnnotation.class);
+			          s += word;
+		        }
+		        core_sentences.add(s);
+		    }
+
+			// Summarize
+			DocumentSummarizer summarizer = new DocumentSummarizer(core_sentences);
+			List<String> results = summarizer.summarize();
+			for (String s : results) {
+				buf += s;
+			}
+			return buf;
+		}
 		
 		@Override
 		protected Void doInBackground(Void... arg0) {
